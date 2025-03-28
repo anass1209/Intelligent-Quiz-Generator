@@ -3,426 +3,456 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Page Title -->
     <title>QuizGen - Your Custom Quiz</title>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- MathJax for LaTeX support -->
+    <!-- MathJax for LaTeX support (renders mathematical formulas) -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <!-- html2pdf library for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* Global variables */
+        /* Global CSS Variables for theming and consistency */
         :root {
-            --primary: #4361ee;
-            --primary-light: #4cc9f0;
-            --primary-dark: #3a0ca3;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-            --light-bg: #f8f9fa;
-            --dark-text: #2d3748;
-            --gray-text: #718096;
-            --white: #ffffff;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.1);
-            --radius: 12px;
-            --transition: all 0.3s ease;
+            --primary: #4361ee;         /* Primary blue */
+            --primary-light: #4cc9f0;   /* Lighter blue/cyan */
+            --primary-dark: #3a0ca3;    /* Darker purple/blue */
+            --success: #2ecc71;         /* Green for success states */
+            --warning: #f39c12;         /* Orange for warnings */
+            --danger: #e74c3c;          /* Red for errors */
+            --light-bg: #f8f9fa;        /* Light grey background */
+            --dark-text: #2d3748;       /* Dark grey text */
+            --gray-text: #718096;       /* Medium grey text */
+            --white: #ffffff;           /* White */
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1); /* Standard shadow */
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.1); /* Larger shadow */
+            --radius: 12px;             /* Standard border radius */
+            --transition: all 0.3s ease; /* Standard transition effect */
         }
 
-        /* Reset and base styles */
+        /* Basic reset and body styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--light-bg);
-            color: var(--dark-text);
-            line-height: 1.6;
-            min-height: 100vh;
-            padding-bottom: 60px;
+            font-family: 'Poppins', sans-serif; /* Apply primary font */
+            background-color: var(--light-bg); /* Light background */
+            color: var(--dark-text); /* Default text color */
+            line-height: 1.6; /* Improve readability */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            padding-bottom: 60px; /* Space at the bottom */
         }
-        
+
+        /* Main content container */
         .container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
+            max-width: 1000px; /* Max width of content */
+            margin: 40px auto; /* Center container horizontally */
+            padding: 0 20px; /* Side padding */
         }
-        
-        /* Quiz header */
+
+        /* Quiz header section styling */
         .quiz-header {
-            background-color: var(--white);
-            padding: 30px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
+            background-color: var(--white); /* White background */
+            padding: 30px; /* Padding */
+            border-radius: var(--radius); /* Rounded corners */
+            box-shadow: var(--shadow); /* Apply shadow */
+            text-align: center; /* Center content */
+            margin-bottom: 30px; /* Space below header */
+            position: relative; /* For pseudo-element */
         }
-        
+
+        /* Decorative top border for the header */
         .quiz-header::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(to right, var(--primary), var(--primary-light));
-            border-radius: var(--radius) var(--radius) 0 0;
+            height: 4px; /* Border thickness */
+            background: linear-gradient(to right, var(--primary), var(--primary-light)); /* Gradient border */
+            border-radius: var(--radius) var(--radius) 0 0; /* Match top corners */
         }
-        
+
+        /* Logo/Icon in header */
         .quiz-logo {
             color: var(--primary);
             font-size: 2.5rem;
             margin-bottom: 15px;
         }
-        
+
+        /* Main title in header */
         .quiz-title {
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 15px;
             color: var(--primary-dark);
         }
-        
+
+        /* Subtitle in header */
         .quiz-subtitle {
             color: var(--gray-text);
             margin-bottom: 20px;
-            max-width: 600px;
+            max-width: 600px; /* Limit width for readability */
             margin-left: auto;
             margin-right: auto;
         }
-        
+
+        /* Container for quiz statistics (e.g., question count) */
         .quiz-stats {
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            justify-content: center; /* Center stats horizontally */
+            gap: 20px; /* Space between stat items */
             margin-bottom: 20px;
         }
-        
+
+        /* Individual statistic item */
         .quiz-stat {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            background-color: rgba(67, 97, 238, 0.1);
-            padding: 8px 15px;
-            border-radius: 30px;
-            color: var(--primary);
+            align-items: center; /* Align icon and text vertically */
+            gap: 8px; /* Space between icon and text */
+            background-color: rgba(67, 97, 238, 0.1); /* Light blue background */
+            padding: 8px 15px; /* Padding */
+            border-radius: 30px; /* Pill shape */
+            color: var(--primary); /* Blue text */
             font-weight: 500;
         }
-        
+
+        /* Progress bar container */
         .progress-container {
-            height: 8px;
-            background-color: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 10px;
+            height: 8px; /* Bar height */
+            background-color: #e2e8f0; /* Background track color */
+            border-radius: 4px; /* Rounded corners */
+            overflow: hidden; /* Hide overflow of inner bar */
+            margin-top: 10px; /* Space above progress bar */
         }
-        
+
+        /* The actual progress bar element (filled part) */
         .progress-bar {
             height: 100%;
-            background: linear-gradient(to right, var(--primary), var(--primary-light));
-            width: 0%;
-            transition: width 0.4s ease;
+            background: linear-gradient(to right, var(--primary), var(--primary-light)); /* Gradient fill */
+            width: 0%; /* Initial width, updated by JS */
+            transition: width 0.4s ease; /* Smooth width transition */
         }
-        
-        /* Control bar */
+
+        /* Control bar containing buttons (Back, Show All, Save PDF) */
         .quiz-controls {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            background-color: var(--white);
-            padding: 15px 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 15px;
-            z-index: 10;
+            justify-content: space-between; /* Space out button groups */
+            margin-bottom: 30px; /* Space below controls */
+            background-color: var(--white); /* White background */
+            padding: 15px 20px; /* Padding */
+            border-radius: var(--radius); /* Rounded corners */
+            box-shadow: var(--shadow); /* Apply shadow */
+            position: sticky; /* Make it stick to top on scroll */
+            top: 15px; /* Distance from top when sticky */
+            z-index: 10; /* Keep above question cards */
         }
-        
-        /* Button styles */
+
+        /* General button styles */
         .btn {
-            display: inline-flex;
+            display: inline-flex; /* Use flexbox for icon alignment */
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
+            gap: 8px; /* Space between icon and text */
+            padding: 10px 20px; /* Button padding */
             font-size: 0.95rem;
             font-weight: 500;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 30px; /* Pill shape */
+            cursor: pointer; /* Pointer cursor */
+            transition: var(--transition); /* Smooth transitions */
+            border: none; /* No border */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
         }
-        
+
+        /* Primary button style */
         .btn-primary {
             background-color: var(--primary);
             color: white;
         }
-        
+
         .btn-primary:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
+            background-color: var(--primary-dark); /* Darken on hover */
+            transform: translateY(-2px); /* Slight lift */
         }
-        
+
+        /* Secondary button style */
         .btn-secondary {
-            background-color: #edf2f7;
-            color: var(--dark-text);
+            background-color: #edf2f7; /* Light grey background */
+            color: var(--dark-text); /* Dark text */
         }
-        
+
         .btn-secondary:hover {
-            background-color: #e2e8f0;
-            transform: translateY(-2px);
+            background-color: #e2e8f0; /* Slightly darker grey on hover */
+            transform: translateY(-2px); /* Slight lift */
         }
-        
+
+        /* Success button style */
         .btn-success {
             background-color: var(--success);
             color: white;
         }
-        
+
         .btn-success:hover {
-            background-color: #27ae60;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            background-color: #27ae60; /* Darken green on hover */
+            transform: translateY(-2px); /* Slight lift */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Increase shadow */
         }
-        
-        /* Improved styles for question cards */
+
+        /* Improved styles for individual question cards */
         .question-card {
-            background-color: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
-            overflow: hidden;
-            transition: var(--transition);
-            border-left: 4px solid var(--primary);
+            background-color: var(--white); /* White background */
+            border-radius: var(--radius); /* Rounded corners */
+            box-shadow: var(--shadow); /* Apply shadow */
+            margin-bottom: 30px; /* Space between cards */
+            overflow: hidden; /* Ensure content stays within rounded corners */
+            transition: var(--transition); /* Smooth transitions */
+            border-left: 4px solid var(--primary); /* Blue left border accent */
         }
-        
+
+        /* Hover effect for question cards */
         .question-card:hover {
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-lg); /* Increase shadow on hover */
         }
-        
+
+        /* Header section within each question card */
         .question-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: rgba(67, 97, 238, 0.05);
-            border-bottom: 1px solid #e2e8f0;
+            justify-content: space-between; /* Space out title and number */
+            align-items: center; /* Align items vertically */
+            padding: 15px 20px; /* Padding */
+            background-color: rgba(67, 97, 238, 0.05); /* Very light blue background */
+            border-bottom: 1px solid #e2e8f0; /* Separator line */
         }
-        
+
+        /* Title area within question header (icon + text + difficulty) */
         .question-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: var(--primary);
+            gap: 10px; /* Space between elements */
+            color: var(--primary); /* Blue color */
             font-weight: 600;
         }
-        
+
+        /* Question number display (e.g., "1 / 10") */
         .question-number {
-            background-color: var(--primary);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
+            background-color: var(--primary); /* Blue background */
+            color: white; /* White text */
+            padding: 4px 12px; /* Padding */
+            border-radius: 20px; /* Pill shape */
             font-size: 0.85rem;
             font-weight: 500;
         }
-        
+
+        /* Body section of the question card */
         .question-body {
-            padding: 20px;
+            padding: 20px; /* Padding */
         }
-        
+
+        /* The actual question text */
         .question-text {
             font-size: 1.05rem;
-            line-height: 1.7;
-            margin-bottom: 20px;
+            line-height: 1.7; /* Improve readability */
+            margin-bottom: 20px; /* Space below question text */
             color: var(--dark-text);
         }
-        
-        /* Improved styles for question actions */
+
+        /* Container for the 'Show Answer' button */
         .question-actions {
-            text-align: left;
-            margin-bottom: 20px;
+            text-align: left; /* Align button to the left */
+            margin-bottom: 20px; /* Space below button */
         }
-        
+
+        /* 'Show Answer' / 'Hide Answer' button style */
         .btn-show-answer {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
+            background-color: var(--primary); /* Blue background */
+            color: white; /* White text */
+            border: none; /* No border */
+            border-radius: 5px; /* Slightly rounded corners */
+            padding: 8px 15px; /* Padding */
             font-size: 0.9rem;
-            cursor: pointer;
-            display: inline-flex;
+            cursor: pointer; /* Pointer cursor */
+            display: inline-flex; /* Use flexbox for icon alignment */
             align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            gap: 8px; /* Space between icon and text */
+            transition: all 0.2s ease; /* Smooth transitions */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
         }
-        
+
+        /* Hover effect for 'Show Answer' button */
         .btn-show-answer:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
+            background-color: var(--primary-dark); /* Darken on hover */
+            transform: translateY(-2px); /* Slight lift */
         }
-        
+
+        /* Style when answer is shown ('Hide Answer' state) */
         .btn-show-answer.active {
-            background-color: #cbd5e0;
-            color: #4a5568;
+            background-color: #cbd5e0; /* Grey background */
+            color: #4a5568; /* Darker grey text */
         }
-        
-        /* Simplified answer section */
+
+        /* Section containing the answer, hidden by default */
         .answer-section {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease;
-            margin-top: 20px;
-            opacity: 0;
+            max-height: 0; /* Start collapsed */
+            overflow: hidden; /* Hide content when collapsed */
+            transition: max-height 0.4s ease, opacity 0.4s ease; /* Smooth transition for height and opacity */
+            margin-top: 20px; /* Space above answer section */
+            opacity: 0; /* Start transparent */
         }
-        
+
+        /* Style when the answer section is visible */
         .answer-section.visible {
-            max-height: 2000px;
-            opacity: 1;
+            max-height: 2000px; /* Large max-height to allow expansion */
+            opacity: 1; /* Fade in */
         }
-        
+
+        /* Container styling within the answer section */
         .answer-container {
-            background-color: #f7fafc;
-            border-radius: 8px;
-            border-left: 3px solid var(--success);
-            margin-top: 10px;
+            background-color: #f7fafc; /* Very light grey background */
+            border-radius: 8px; /* Rounded corners */
+            border-left: 3px solid var(--success); /* Green left border accent */
+            margin-top: 10px; /* Space above container */
         }
-        
+
+        /* Header within the answer container */
         .answer-header {
-            padding: 12px 15px;
-            border-bottom: 1px solid #edf2f7;
+            padding: 12px 15px; /* Padding */
+            border-bottom: 1px solid #edf2f7; /* Separator line */
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: var(--success);
+            gap: 10px; /* Space between icon and text */
+            color: var(--success); /* Green color */
             font-weight: 600;
             font-size: 0.95rem;
         }
-        
+
+        /* Content area within the answer container */
         .answer-content {
-            padding: 15px;
-            color: var(--dark-text);
-            line-height: 1.7;
+            padding: 15px; /* Padding */
+            color: var(--dark-text); /* Dark text */
+            line-height: 1.7; /* Improve readability */
         }
-        
+
+        /* Paragraph styling within answer content */
         .answer-content p {
-            margin-bottom: 15px;
+            margin-bottom: 15px; /* Space between paragraphs */
         }
-        
+
+        /* Remove bottom margin from last paragraph */
         .answer-content p:last-child {
             margin-bottom: 0;
         }
-        
-        /* Code and formulas */
+
+        /* Styling for inline code elements (using `backticks`) */
         .answer-content code,
         .question-text code {
-            background-color: #f7fafc;
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9em;
-            color: #e53e3e;
+            background-color: #f7fafc; /* Light background */
+            padding: 2px 5px; /* Padding */
+            border-radius: 4px; /* Rounded corners */
+            font-family: 'Consolas', 'Monaco', monospace; /* Monospace font */
+            font-size: 0.9em; /* Slightly smaller font */
+            color: #e53e3e; /* Reddish color for code */
         }
-        
-        /* Difficulty badges */
+
+        /* Styling for difficulty badges (if provided) */
         .difficulty-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 4px 12px; /* Padding */
+            border-radius: 20px; /* Pill shape */
+            font-size: 0.8rem; /* Small font size */
             font-weight: 600;
-            margin-left: 10px;
+            margin-left: 10px; /* Space to the left */
         }
-        
+
+        /* Specific colors for difficulty levels */
         .difficulty-easy {
-            background-color: rgba(46, 204, 113, 0.15);
-            color: #27ae60;
+            background-color: rgba(46, 204, 113, 0.15); /* Light green */
+            color: #27ae60; /* Darker green text */
         }
-        
+
         .difficulty-medium {
-            background-color: rgba(243, 156, 18, 0.15);
-            color: #f39c12;
+            background-color: rgba(243, 156, 18, 0.15); /* Light orange */
+            color: #f39c12; /* Orange text */
         }
-        
+
         .difficulty-hard {
-            background-color: rgba(231, 76, 60, 0.15);
-            color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.15); /* Light red */
+            color: #e74c3c; /* Red text */
         }
-        
-        /* Floating buttons */
+
+        /* Floating 'Back to Top' button */
         .floating-btn {
-            position: fixed;
+            position: fixed; /* Keep in viewport */
             bottom: 30px;
             right: 30px;
-            width: 50px;
+            width: 50px; /* Button size */
             height: 50px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
+            border-radius: 50%; /* Circular */
+            background-color: var(--primary); /* Blue background */
+            color: white; /* White icon */
+            display: flex; /* Center icon */
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: var(--transition);
-            opacity: 0;
-            visibility: hidden;
-            z-index: 100;
+            font-size: 1.2rem; /* Icon size */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow */
+            cursor: pointer; /* Pointer cursor */
+            transition: var(--transition); /* Smooth transitions */
+            opacity: 0; /* Hidden by default */
+            visibility: hidden; /* Hidden by default */
+            z-index: 100; /* Keep above other content */
         }
-        
+
+        /* Style when the button should be visible (controlled by JS) */
         .floating-btn.visible {
             opacity: 1;
             visibility: visible;
         }
-        
+
+        /* Hover effect for floating button */
         .floating-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+            transform: translateY(-5px); /* Lift effect */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25); /* Increase shadow */
         }
-        
-        /* Print mode */
+
+        /* Styles applied specifically for printing */
         @media print {
             body {
-                background-color: white;
-                padding-bottom: 0;
+                background-color: white; /* White background for print */
+                padding-bottom: 0; /* Remove bottom padding */
             }
-            
+
             .container {
-                margin: 0;
-                max-width: 100%;
+                margin: 0; /* Remove margins */
+                max-width: 100%; /* Use full width */
             }
-            
-            .quiz-controls, .floating-btn, .btn {
+
+            /* Hide non-essential elements for printing */
+            .quiz-controls, .floating-btn, .btn, .btn-show-answer, .question-actions {
                 display: none !important;
             }
-            
+
+            /* Ensure question cards don't break across pages */
             .question-card {
-                page-break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid #e2e8f0;
-                margin-bottom: 20px;
-                transform: none !important;
+                page-break-inside: avoid; /* Prevent breaking inside card */
+                box-shadow: none; /* Remove shadow */
+                border: 1px solid #e2e8f0; /* Add simple border */
+                margin-bottom: 20px; /* Reduce space between cards */
+                transform: none !important; /* Remove hover transforms */
             }
-            
+
+            /* Ensure answer sections are always visible for printing */
             .answer-section {
-                max-height: none !important;
-                display: block !important;
-                opacity: 1 !important;
-            }
-            
-            .question-actions {
-                display: none !important;
+                max-height: none !important; /* Remove max-height restriction */
+                display: block !important; /* Ensure it's displayed */
+                opacity: 1 !important; /* Ensure it's visible */
             }
         }
-        
-        /* Toast styles */
+
+        /* Toast notification styles (re-used from index.html) */
         .toast {
             position: fixed;
             top: 20px;
@@ -466,63 +496,81 @@
             font-size: 0.9em;
             color: var(--gray-text);
         }
-        
-        /* Style de notification pendant la génération du PDF */
+
+        /* Styling for the PDF generation loading toast */
+        /* Uses body context to ensure it overrides default toast position */
         body .toast-pdf-generation {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-width: 400px;
-            width: 90%;
-            z-index: 2000;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            padding: 25px;
+            position: fixed; /* Fixed position relative to viewport */
+            top: 50%; /* Center vertically */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, -50%); /* Adjust for element size */
+            max-width: 400px; /* Max width */
+            width: 90%; /* Responsive width */
+            z-index: 2000; /* Keep above everything else */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            text-align: center; /* Center text */
+            padding: 25px; /* Padding */
+            /* Reuse general toast styles for background, border etc. */
+            background-color: var(--white);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary); /* Blue border */
+            display: flex; /* Use flexbox */
+            align-items: center; /* Align vertically */
+        }
+        /* Ensure icon color matches border */
+         body .toast-pdf-generation .toast-icon {
+            color: var(--primary);
         }
 
-        /* Animation pour le toast de génération */
+        /* Animation for the PDF generation toast icon */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
 
+        /* Apply pulse animation to the icon */
         .toast-pdf-generation .toast-icon {
-            font-size: 2em;
-            margin-bottom: 15px;
-            animation: pulse 1.5s infinite;
+            font-size: 2em; /* Larger icon */
+            margin-bottom: 0; /* Remove bottom margin if centered */
+            margin-right: 15px; /* Add right margin */
+            animation: pulse 1.5s infinite; /* Apply pulse animation */
         }
-        
-        /* Responsive design */
+
+        /* Responsive adjustments for smaller screens */
         @media (max-width: 768px) {
             .container {
-                margin: 20px auto;
-                padding: 0 15px;
+                margin: 20px auto; /* Reduce top/bottom margin */
+                padding: 0 15px; /* Reduce side padding */
             }
-            
+
+            /* Stack control buttons vertically on small screens */
             .quiz-controls {
-                flex-direction: column;
-                gap: 15px;
+                flex-direction: column; /* Stack items */
+                gap: 15px; /* Add gap between stacked items */
             }
-            
+
+            /* Center button groups within the stacked controls */
             .quiz-controls > div {
                 display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                justify-content: center;
+                flex-wrap: wrap; /* Allow buttons to wrap */
+                gap: 10px; /* Space between buttons */
+                justify-content: center; /* Center buttons */
             }
-            
+
+            /* Adjust question header layout for smaller screens */
             .question-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
+                flex-direction: column; /* Stack items */
+                align-items: flex-start; /* Align items to the start */
+                gap: 10px; /* Add gap */
             }
-            
+
+            /* Move question number to the end (bottom right) */
             .question-number {
                 align-self: flex-end;
             }
-            
+
+            /* Adjust floating button position */
             .floating-btn {
                 bottom: 20px;
                 right: 20px;
@@ -532,79 +580,98 @@
 </head>
 <body>
     <div class="container">
+        <!-- Quiz Header Section -->
         <div class="quiz-header">
             <div class="quiz-logo">
-                <i class="fas fa-brain"></i>
+                <i class="fas fa-brain"></i> <!-- Icon: Brain -->
             </div>
-            <h1 class="quiz-title">Your Custom Quiz</h1>
-            <p class="quiz-subtitle">Questions generated from your documents</p>
-            
+            <h1 class="quiz-title">Your Custom Quiz</h1> <!-- Title unchanged -->
+            <p class="quiz-subtitle">Questions generated from your documents</p> <!-- Subtitle unchanged -->
+
+            <!-- Quiz Statistics (Question Count, Progress) -->
             <div class="quiz-stats">
                 <div class="quiz-stat">
-                    <i class="fas fa-list-ol"></i>
-                    <span>{{ questions|length }} questions</span>
+                    <i class="fas fa-list-ol"></i> <!-- Icon: Ordered list -->
+                    <span>{{ questions|length }} questions</span> <!-- Text unchanged -->
                 </div>
                 <div class="quiz-stat">
-                    <i class="fas fa-check-circle"></i>
-                    <span id="progress-count">0 / {{ questions|length }} completed</span>
+                    <i class="fas fa-check-circle"></i> <!-- Icon: Check circle -->
+                    <!-- Progress text updated by JavaScript -->
+                    <span id="progress-count">0 / {{ questions|length }} completed</span> <!-- Text unchanged -->
                 </div>
             </div>
-            
+
+            <!-- Progress Bar -->
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
         </div>
-        
+
+        <!-- Quiz Control Buttons -->
         <div class="quiz-controls">
+            <!-- Back Button -->
             <div>
-                <button class="btn btn-secondary" onclick="window.location.href='{{ url_for('index') }}'">
-                    <i class="fas fa-arrow-left"></i> Back to Home
+                <button class="btn btn-secondary" onclick="window.location.href='{{ url_for('index') }}';">
+                    <i class="fas fa-arrow-left"></i> Back to Home <!-- Button text unchanged -->
                 </button>
             </div>
+            <!-- Action Buttons -->
             <div>
                 <button class="btn btn-primary" id="show-all-btn" onclick="toggleAllAnswers()">
-                    <i class="fas fa-eye"></i> Show All Answers
+                    <i class="fas fa-eye"></i> Show All Answers <!-- Button text unchanged -->
                 </button>
                 <button class="btn btn-success" onclick="saveToPDF()">
-                    <i class="fas fa-file-pdf"></i> Save as PDF
+                    <i class="fas fa-file-pdf"></i> Save as PDF <!-- Button text unchanged -->
                 </button>
             </div>
         </div>
-        
+
+        <!-- Main Quiz Content Area -->
         <div id="quiz-content">
+            <!-- Check if questions exist -->
             {% if questions and questions|length > 0 %}
+                <!-- Loop through each question -->
                 {% for question_data in questions %}
+                <!-- Question Card -->
                 <div class="question-card" id="question-{{ loop.index0 }}">
+                    <!-- Question Header -->
                     <div class="question-header">
                         <div class="question-title">
-                            <i class="fas fa-question-circle"></i>
-                            <span>Question</span>
+                            <i class="fas fa-question-circle"></i> <!-- Icon: Question circle -->
+                            <span>Question</span> <!-- Text unchanged -->
+                            <!-- Optional Difficulty Badge -->
                             {% if question_data.difficulty is defined %}
                             <span class="difficulty-badge difficulty-{{ question_data.difficulty|lower }}">
                                 {{ question_data.difficulty }}
                             </span>
                             {% endif %}
                         </div>
+                        <!-- Question Number -->
                         <div class="question-number">{{ loop.index }} / {{ questions|length }}</div>
                     </div>
+                    <!-- Question Body -->
                     <div class="question-body">
+                        <!-- Question Text (Rendered directly, potentially includes HTML/Markdown) -->
                         <div class="question-text">{{ question_data.question }}</div>
+                        <!-- Actions (Show/Hide Answer Button) -->
                         <div class="question-actions">
                             <button class="btn-show-answer" id="show-btn-{{ loop.index0 }}" onclick="toggleAnswer({{ loop.index0 }})">
-                                <i class="fas fa-eye"></i> Show Answer
+                                <i class="fas fa-eye"></i> Show Answer <!-- Button text unchanged -->
                             </button>
                         </div>
+                        <!-- Answer Section (Hidden by default) -->
                         <div class="answer-section" id="answer-{{ loop.index0 }}">
                             <div class="answer-container">
                                 <div class="answer-header">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Answer</span>
+                                    <i class="fas fa-check-circle"></i> <!-- Icon: Check circle -->
+                                    <span>Answer</span> <!-- Text unchanged -->
                                 </div>
+                                <!-- Answer Content (Rendered directly, potentially includes HTML/Markdown) -->
                                 <div class="answer-content">
                                     {% if question_data.answer is defined %}
-                                        {{ question_data.answer|safe }}
+                                        {{ question_data.answer|safe }} <!-- Use |safe filter if answer contains HTML -->
                                     {% else %}
-                                        <p>No answer available for this question.</p>
+                                        <p>No answer available for this question.</p> <!-- Text unchanged -->
                                     {% endif %}
                                 </div>
                             </div>
@@ -613,279 +680,346 @@
                 </div>
                 {% endfor %}
             {% else %}
+                <!-- Message shown if no questions are available -->
                 <div style="text-align: center; padding: 50px 0;">
-                    <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--gray-text); margin-bottom: 20px;"></i>
-                    <h3 style="margin-bottom: 15px;">No questions available</h3>
-                    <p style="color: var(--gray-text); margin-bottom: 30px;">No questions could be generated or the quiz is empty.</p>
+                    <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--gray-text); margin-bottom: 20px;"></i> <!-- Icon: Exclamation circle -->
+                    <h3 style="margin-bottom: 15px;">No questions available</h3> <!-- Text unchanged -->
+                    <p style="color: var(--gray-text); margin-bottom: 30px;">No questions could be generated or the quiz is empty.</p> <!-- Text unchanged -->
                     <a href="{{ url_for('index') }}" class="btn btn-primary">
-                        <i class="fas fa-home"></i> Back to Home
+                        <i class="fas fa-home"></i> Back to Home <!-- Button text unchanged -->
                     </a>
                 </div>
             {% endif %}
         </div>
-        
+
+        <!-- Floating Back to Top Button -->
         <div class="floating-btn" id="back-to-top" onclick="scrollToTop()">
-            <i class="fas fa-arrow-up"></i>
+            <i class="fas fa-arrow-up"></i> <!-- Icon: Arrow up -->
         </div>
-        
-        <!-- Toast pour les notifications -->
+
+        <!-- Toast Notification Container -->
         <div id="toast" class="toast">
             <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
             <div class="toast-content">
-                <div class="toast-title">Succès</div>
-                <div class="toast-message">Opération réussie !</div>
+                <div class="toast-title">Success</div> <!-- Default title -->
+                <div class="toast-message">Operation successful!</div> <!-- Default message -->
             </div>
         </div>
     </div>
 
     <script>
-        // Global variables
+        /**
+         * @fileoverview JavaScript for the Quiz Display Page.
+         * Handles toggling answers, progress tracking, scrolling,
+         * local storage persistence, PDF generation, and UI updates.
+         */
+
+        // --- Global Variables ---
+        /** @const {number} Total number of question cards on the page. */
         const questionCount = document.querySelectorAll('.question-card').length;
+        /** @type {number} Counter for currently visible answers. */
         let shownAnswers = 0;
-        
-        // Page initialization
+
+        // --- Initialization ---
+        /**
+         * Runs when the DOM is fully loaded. Sets up event listeners and initial state.
+         */
         document.addEventListener('DOMContentLoaded', function() {
-            // Activate back to top button on scroll
+            // Add scroll listener to show/hide the back-to-top button.
             window.addEventListener('scroll', toggleBackToTopButton);
-            
-            // Initialize progress bar
+
+            // Initialize the progress bar based on initially loaded state.
             updateProgress();
-            
-            // Format code elements with syntax
-            formatCodeElements();
-            
-            // Load previous progress if it exists
+
+            // Attempt to format any code blocks or mathematical formulas.
+            formatCodeAndMath();
+
+            // Load any previously saved progress (which answers were visible).
             loadProgress();
         });
-        
-        // Function to format code elements
-        function formatCodeElements() {
-            const codeRegex = /`([^`]+)`/g;
-            const textElements = document.querySelectorAll('.question-text, .answer-content');
-            
+
+        /**
+         * Formats inline code elements (using `backticks`) and triggers MathJax typesetting.
+         * Looks for `text` patterns within question and answer elements and wraps them in <code> tags.
+         */
+        function formatCodeAndMath() {
+            const codeRegex = /`([^`]+)`/g; // Regex to find text within backticks
+            const textElements = document.querySelectorAll('.question-text, .answer-content'); // Select relevant text containers
+
             textElements.forEach(el => {
+                // Avoid re-processing elements that might already contain complex HTML (like <pre> or <code>)
                 if (!el.querySelector('code') && !el.querySelector('pre')) {
+                    // Replace `text` with <code>text</code>
                     el.innerHTML = el.innerHTML.replace(codeRegex, '<code>$1</code>');
                 }
             });
-            
-            // Initialize MathJax if present
-            if (window.MathJax) {
+
+            // If MathJax is loaded, tell it to typeset the page (or specific elements if needed)
+            if (window.MathJax && typeof window.MathJax.typeset === 'function') {
                 window.MathJax.typeset();
             }
         }
-        
-        // Function to toggle display of an answer
+
+        // --- Answer Toggling ---
+        /**
+         * Toggles the visibility of a single answer section based on its index.
+         * Updates the corresponding button text/icon and the overall progress.
+         * @param {number} index - The zero-based index of the question/answer to toggle.
+         */
         function toggleAnswer(index) {
             const answerSection = document.getElementById(`answer-${index}`);
             const showButton = document.getElementById(`show-btn-${index}`);
-            
-            if (!answerSection || !showButton) return;
-            
+
+            if (!answerSection || !showButton) return; // Exit if elements not found
+
             const isVisible = answerSection.classList.contains('visible');
-            
+
             if (isVisible) {
-                // Hide the answer
+                // --- Hide the answer ---
                 answerSection.classList.remove('visible');
-                showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer';
-                showButton.classList.remove('active');
-                shownAnswers--;
+                showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer'; // Text unchanged
+                showButton.classList.remove('active'); // Remove active style
+                if (shownAnswers > 0) shownAnswers--; // Decrement counter
             } else {
-                // Show the answer
+                // --- Show the answer ---
                 answerSection.classList.add('visible');
-                showButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer';
-                showButton.classList.add('active');
-                shownAnswers++;
-                
-                // Process LaTeX if necessary
-                if (window.MathJax) {
+                showButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer'; // Text unchanged
+                showButton.classList.add('active'); // Add active style
+                shownAnswers++; // Increment counter
+
+                // Re-typeset MathJax for the specific section if needed
+                if (window.MathJax && typeof window.MathJax.typeset === 'function') {
                     window.MathJax.typeset([answerSection]);
                 }
             }
-            
-            // Update progress
+
+            // Update the progress bar and counter.
             updateProgress();
-            
-            // Save progress
+            // Save the current state of shown answers to local storage.
             saveProgress();
         }
-        
-        // Function to toggle display of all answers
+
+        /**
+         * Toggles the visibility of all answer sections on the page.
+         * Updates all "Show/Hide Answer" buttons and the "Show/Hide All" button.
+         * Updates the overall progress.
+         */
         function toggleAllAnswers() {
             const allAnswerSections = document.querySelectorAll('.answer-section');
+            // Determine if all answers are currently visible
             const allVisible = shownAnswers === questionCount;
             const showAllBtn = document.getElementById('show-all-btn');
-            
-            // Update buttons
+
+            if (!showAllBtn) return; // Exit if main toggle button not found
+
             if (allVisible) {
-                // Hide all answers
+                // --- Hide all answers ---
                 allAnswerSections.forEach((section, index) => {
                     const showButton = document.getElementById(`show-btn-${index}`);
-                    section.classList.remove('visible');
+                    section.classList.remove('visible'); // Hide section
                     if (showButton) {
-                        showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer';
+                        // Reset individual button
+                        showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer'; // Text unchanged
                         showButton.classList.remove('active');
                     }
                 });
-                
-                // Update "Show All" button
-                showAllBtn.innerHTML = '<i class="fas fa-eye"></i> Show All Answers';
-                showAllBtn.classList.remove('btn-secondary');
+
+                // Update the main "Show/Hide All" button text and style
+                showAllBtn.innerHTML = '<i class="fas fa-eye"></i> Show All Answers'; // Text unchanged
+                showAllBtn.classList.remove('btn-secondary'); // Change style back to primary
                 showAllBtn.classList.add('btn-primary');
-                
-                shownAnswers = 0;
+
+                shownAnswers = 0; // Reset counter
             } else {
-                // Show all answers
+                // --- Show all answers ---
                 allAnswerSections.forEach((section, index) => {
                     const showButton = document.getElementById(`show-btn-${index}`);
-                    section.classList.add('visible');
+                    section.classList.add('visible'); // Show section
                     if (showButton) {
-                        showButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer';
+                        // Update individual button
+                        showButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer'; // Text unchanged
                         showButton.classList.add('active');
                     }
                 });
-                
-                // Update "Show All" button
-                showAllBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide All Answers';
-                showAllBtn.classList.remove('btn-primary');
+
+                // Update the main "Show/Hide All" button text and style
+                showAllBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide All Answers'; // Text unchanged
+                showAllBtn.classList.remove('btn-primary'); // Change style to secondary
                 showAllBtn.classList.add('btn-secondary');
-                
-                shownAnswers = questionCount;
-                
-                // Process LaTeX if necessary
-                if (window.MathJax) {
+
+                shownAnswers = questionCount; // Set counter to total
+
+                // Re-typeset the whole page if MathJax is present
+                if (window.MathJax && typeof window.MathJax.typeset === 'function') {
                     window.MathJax.typeset();
                 }
             }
-            
-            // Update progress
+
+            // Update the progress bar and counter.
             updateProgress();
-            
-            // Save progress
+            // Save the current state.
             saveProgress();
         }
-        
-        // Function to update the progress bar
+
+        // --- Progress Tracking ---
+        /**
+         * Updates the visual progress bar and the text counter (e.g., "5 / 10 completed").
+         */
         function updateProgress() {
             const progressBar = document.getElementById('progress-bar');
             const progressCount = document.getElementById('progress-count');
-            
-            if (!progressBar || !progressCount) return;
-            
+
+            if (!progressBar || !progressCount) return; // Exit if elements not found
+
+            // Calculate percentage, avoid division by zero
             const percentage = questionCount > 0 ? (shownAnswers / questionCount) * 100 : 0;
-            progressBar.style.width = `${percentage}%`;
-            progressCount.textContent = `${shownAnswers} / ${questionCount} completed`;
+            progressBar.style.width = `${percentage}%`; // Set progress bar width
+            progressCount.textContent = `${shownAnswers} / ${questionCount} completed`; // Update text, unchanged
         }
-        
-        // Function to handle the back to top button
+
+        // --- UI Helpers ---
+        /**
+         * Shows or hides the 'Back to Top' button based on vertical scroll position.
+         */
         function toggleBackToTopButton() {
             const backToTopButton = document.getElementById('back-to-top');
-            if (!backToTopButton) return;
-            
+            if (!backToTopButton) return; // Exit if button not found
+
+            // Show button if scrolled down more than 300 pixels
             if (window.scrollY > 300) {
                 backToTopButton.classList.add('visible');
             } else {
                 backToTopButton.classList.remove('visible');
             }
         }
-        
-        // Function to scroll to top of the page
+
+        /**
+         * Smoothly scrolls the page to the top.
+         */
         function scrollToTop() {
             window.scrollTo({
                 top: 0,
-                behavior: 'smooth'
+                behavior: 'smooth' // Enable smooth scrolling
             });
         }
-        
-        // Function to save progress
+
+        // --- Local Storage Persistence ---
+        /**
+         * Saves the indices of the currently visible answers to localStorage.
+         * If no answers are visible, removes the item from localStorage.
+         */
         function saveProgress() {
             const shownAnswerIndices = [];
-            document.querySelectorAll('.answer-section').forEach((section, index) => {
-                if (section.classList.contains('visible')) {
+            // Find all answer sections that have the 'visible' class
+            document.querySelectorAll('.answer-section.visible').forEach(section => {
+                // Extract the index from the element's ID (e.g., "answer-5")
+                const index = parseInt(section.id.split('-')[1]);
+                if (!isNaN(index)) {
                     shownAnswerIndices.push(index);
                 }
             });
-            
+
+            // Store the array of indices, or remove the item if empty
             if (shownAnswerIndices.length > 0) {
                 localStorage.setItem('quizProgress', JSON.stringify(shownAnswerIndices));
             } else {
                 localStorage.removeItem('quizProgress');
             }
         }
-        
-        // Function to load saved progress
+
+        /**
+         * Loads the saved progress from localStorage on page load.
+         * Iterates through the saved indices and calls `toggleAnswer` (without saving again)
+         * to restore the visible state of previously shown answers.
+         */
         function loadProgress() {
             try {
                 const savedProgress = localStorage.getItem('quizProgress');
-                if (!savedProgress) return;
-                
+                if (!savedProgress) return; // Exit if no saved progress
+
                 const indices = JSON.parse(savedProgress);
-                if (!Array.isArray(indices)) return;
-                
+                if (!Array.isArray(indices)) return; // Exit if data is invalid
+
+                // Temporarily disable saving during loading to avoid redundant saves
+                const originalSaveProgress = saveProgress;
+                saveProgress = () => {}; // No-op function
+
                 indices.forEach(index => {
+                    // Only toggle if the answer is not already visible (shouldn't happen on load, but safe)
                     const answerSection = document.getElementById(`answer-${index}`);
-                    const showButton = document.getElementById(`show-btn-${index}`);
-                    
-                    if (answerSection && showButton) {
-                        answerSection.classList.add('visible');
-                        showButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer';
-                        showButton.classList.add('active');
-                        shownAnswers++;
+                    if (answerSection && !answerSection.classList.contains('visible')) {
+                        toggleAnswer(index); // Use toggleAnswer to update UI correctly
                     }
                 });
-                
-                // Update progress after loading all answers
+
+                saveProgress = originalSaveProgress; // Restore original save function
+
+                // Update progress bar/counter after loading all saved states
                 updateProgress();
-                
-                // Process LaTeX if necessary
-                if (window.MathJax && shownAnswers > 0) {
+
+                // Retypeset MathJax if any answers were loaded as visible
+                if (window.MathJax && typeof window.MathJax.typeset === 'function' && shownAnswers > 0) {
                     window.MathJax.typeset();
                 }
             } catch (e) {
-                console.error('Error loading progress:', e);
+                console.error('Error loading progress:', e); // Log errors during loading
+                localStorage.removeItem('quizProgress'); // Clear potentially corrupted data
             }
         }
-        
-        // Fonction pour afficher les toasts de notification
+
+        /**
+         * Displays a toast notification.
+         * (Reused function - same as in index.html script)
+         * @param {string} title - The title of the toast.
+         * @param {string} message - The message content.
+         * @param {'success' | 'error' | 'warning' | 'info'} [type='success'] - The type of toast.
+         */
         function showToast(title, message, type = 'success') {
             const toast = document.getElementById('toast');
+            if (!toast) return;
             const toastTitle = toast.querySelector('.toast-title');
             const toastMessage = toast.querySelector('.toast-message');
             const toastIcon = toast.querySelector('.toast-icon i');
-            
-            // Définir le contenu
-            toastTitle.textContent = title;
-            toastMessage.textContent = message;
-            
-            // Définir le type (success, error, warning, info)
-            toast.className = 'toast';
-            if (type === 'error') {
-                toast.classList.add('toast-error');
-                toastIcon.className = 'fas fa-exclamation-circle';
-            } else if (type === 'warning') {
-                toast.classList.add('toast-warning');
-                toastIcon.className = 'fas fa-exclamation-triangle';
-            } else if (type === 'info') {
-                toast.classList.add('toast-info');
-                toastIcon.className = 'fas fa-info-circle';
-            } else {
-                toast.classList.add('toast-success');
-                toastIcon.className = 'fas fa-check-circle';
+
+            if(toastTitle) toastTitle.textContent = title;
+            if(toastMessage) toastMessage.textContent = message;
+
+            toast.className = 'toast'; // Reset classes
+            let iconClass = 'fa-check-circle';
+            switch (type) {
+                case 'error':
+                    toast.classList.add('toast-error');
+                    iconClass = 'fa-exclamation-circle';
+                    break;
+                case 'warning':
+                    toast.classList.add('toast-warning');
+                    iconClass = 'fa-exclamation-triangle';
+                    break;
+                case 'info':
+                    toast.classList.add('toast-info');
+                    iconClass = 'fa-info-circle';
+                    break;
+                default:
+                    toast.classList.add('toast-success');
+                    iconClass = 'fa-check-circle';
+                    break;
             }
-            
-            // Afficher le toast
+            if (toastIcon) toastIcon.className = `fas ${iconClass}`;
+
             toast.classList.add('show');
-            
-            // Masquer après 5 secondes
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 5000);
         }
-        
-        // Fonction pour mémoriser l'état des réponses avant la génération du PDF
+
+        // --- PDF Generation ---
+
+        /**
+         * Remembers which answers were visible before starting PDF generation.
+         * Adds a 'data-was-visible' attribute to currently visible answer sections.
+         */
         function rememberVisibleStates() {
-            const allAnswerSections = document.querySelectorAll('.answer-section');
-            allAnswerSections.forEach(section => {
+            document.querySelectorAll('.answer-section').forEach(section => {
                 if (section.classList.contains('visible')) {
                     section.setAttribute('data-was-visible', 'true');
                 } else {
@@ -893,137 +1027,122 @@
                 }
             });
         }
-        
-        // Fonction pour sauvegarder en PDF
+
+        /**
+         * Restores the visibility state of answers based on the 'data-was-visible' attribute.
+         * Also restores the state of the "Show/Hide Answer" buttons.
+         */
+        function restoreVisibleStates() {
+            document.querySelectorAll('.answer-section').forEach((section, index) => {
+                const showButton = document.getElementById(`show-btn-${index}`);
+                const wasVisible = section.hasAttribute('data-was-visible');
+
+                 // Reset styles applied for PDF generation
+                section.style.maxHeight = '';
+                section.style.opacity = '';
+
+                if (wasVisible) {
+                    // Ensure it has the visible class (might have been added temporarily)
+                    if(!section.classList.contains('visible')) section.classList.add('visible');
+                    // Update button if it exists
+                    if (showButton) {
+                        showButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer'; // Text unchanged
+                        showButton.classList.add('active');
+                    }
+                } else {
+                     // Ensure it does NOT have the visible class
+                    if(section.classList.contains('visible')) section.classList.remove('visible');
+                     // Update button if it exists
+                    if (showButton) {
+                        showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer'; // Text unchanged
+                        showButton.classList.remove('active');
+                    }
+                }
+                // Clean up the temporary attribute
+                section.removeAttribute('data-was-visible');
+            });
+             // Recalculate shownAnswers based on restored state
+             shownAnswers = document.querySelectorAll('.answer-section.visible').length;
+             updateProgress(); // Update progress bar based on restored count
+        }
+
+        /**
+         * Generates a PDF of the quiz content using the html2pdf library.
+         * Temporarily shows all answers and hides controls during generation,
+         * then restores the original state. Shows loading and success/error toasts.
+         */
         function saveToPDF() {
-            // S'assurer que html2pdf est disponible
+            // Check if html2pdf library is loaded
             if (typeof html2pdf === 'undefined') {
-                showToast('Erreur', 'La bibliothèque html2pdf n\'est pas disponible.', 'error');
-                console.error('html2pdf n\'est pas chargé.');
+                showToast('Error', 'PDF generation library (html2pdf) is not available.', 'error'); // Message changed to English
+                console.error('html2pdf is not loaded.');
                 return;
             }
-            
-            // Afficher un message de chargement
+
+            // --- Show Loading Toast ---
             const loadingToast = document.createElement('div');
+            // Apply specific class for PDF generation toast styling
             loadingToast.className = 'toast toast-info show toast-pdf-generation';
             loadingToast.innerHTML = `
                 <div class="toast-icon"><i class="fas fa-spinner fa-spin"></i></div>
                 <div class="toast-content">
-                    <div class="toast-title">Génération du PDF</div>
-                    <div class="toast-message">Veuillez patienter pendant la création du fichier...</div>
+                    <div class="toast-title">Generating PDF</div>
+                    <div class="toast-message">Please wait while the file is being created...</div>
                 </div>
-            `;
+            `; // Text changed to English
             document.body.appendChild(loadingToast);
-    
-            try {
-                // Mémoriser l'état actuel des réponses (visibles ou non)
-                rememberVisibleStates();
-    
-                // Obtenez le contenu du quiz
-                const quizContent = document.getElementById('quiz-content');
-                
-                // Options pour html2pdf
-                const options = {
-                    margin: 10,
-                    filename: 'quiz-personnalise.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-    
-                // Montrer toutes les réponses pour le PDF
-                const allAnswerSections = document.querySelectorAll('.answer-section');
-                allAnswerSections.forEach(section => {
-                    section.classList.add('visible');
-                    section.style.maxHeight = 'none'; // Forcer l'affichage pour le PDF
-                    section.style.opacity = '1';
+            // --- End Loading Toast ---
+
+            // --- Prepare for PDF Generation ---
+            rememberVisibleStates(); // Remember current visibility
+            const quizContent = document.getElementById('quiz-content');
+            const allAnswerSections = document.querySelectorAll('.answer-section');
+            const hiddenElements = document.querySelectorAll('.quiz-controls, .floating-btn, .question-actions');
+
+            // Temporarily show all answers and hide controls
+            allAnswerSections.forEach(section => {
+                section.classList.add('visible'); // Make visible
+                section.style.maxHeight = 'none'; // Ensure full height is considered by html2pdf
+                section.style.opacity = '1';
+            });
+            hiddenElements.forEach(el => el.style.display = 'none'); // Hide buttons/controls
+            // --- End Preparation ---
+
+            // --- Configure and Run html2pdf ---
+            const pdfOptions = {
+                margin:       10, // Margin in mm
+                filename:     'custom-quiz.pdf', // Default filename unchanged
+                image:        { type: 'jpeg', quality: 0.98 }, // Image settings
+                html2canvas:  { scale: 2, useCORS: true }, // Rendering options
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // PDF options
+            };
+
+            html2pdf().from(quizContent).set(pdfOptions).save()
+                .then(() => {
+                    // --- On Success ---
+                    document.body.removeChild(loadingToast); // Remove loading toast
+                    showToast('Success', 'PDF generated successfully!', 'success'); // Message unchanged
+                })
+                .catch(error => {
+                    // --- On Error ---
+                    console.error('Error generating PDF:', error); // Log the error
+                    document.body.removeChild(loadingToast); // Remove loading toast
+                    showToast('Error', `Error generating PDF: ${error.message}`, 'error'); // Show error toast, message unchanged
+                })
+                .finally(() => {
+                    // --- Cleanup (Always Runs) ---
+                    // Restore original visibility state of answers and controls
+                    hiddenElements.forEach(el => el.style.display = ''); // Show controls again
+                    restoreVisibleStates(); // Restore answer visibility based on 'data-was-visible'
+                    // --- End Cleanup ---
                 });
-    
-                // Cacher les boutons pour le PDF
-                const allButtons = document.querySelectorAll('.question-actions button, .quiz-controls');
-                allButtons.forEach(button => {
-                    button.style.display = 'none';
-                });
-    
-                // Masquer le bouton flottant
-                const floatingBtn = document.getElementById('back-to-top');
-                if (floatingBtn) floatingBtn.style.display = 'none';
-    
-                // Générer le PDF
-                html2pdf().from(quizContent).set(options).save().then(() => {
-                    // Restaurer l'état d'origine après la génération
-                    allAnswerSections.forEach((section, index) => {
-                        const showButton = document.getElementById(`show-btn-${index}`);
-                        const wasVisible = section.hasAttribute('data-was-visible');
-                        
-                        if (!wasVisible) {
-                            section.classList.remove('visible');
-                            section.style.maxHeight = '';
-                            section.style.opacity = '';
-                            
-                            if (showButton) {
-                                showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer';
-                                showButton.classList.remove('active');
-                            }
-                        }
-                    });
-    
-                    // Restaurer les boutons
-                    allButtons.forEach(button => {
-                        button.style.display = '';
-                    });
-    
-                    // Restaurer le bouton flottant
-                    if (floatingBtn) floatingBtn.style.display = '';
-    
-                    // Supprimer le toast de chargement
-                    document.body.removeChild(loadingToast);
-    
-                    // Afficher un toast de succès
-                    showToast('Succès', 'Le PDF a été généré avec succès !', 'success');
-                }).catch(error => {
-                    console.error('Erreur lors de la génération du PDF:', error);
-                    
-                    // Restaurer l'état d'origine en cas d'erreur
-                    allAnswerSections.forEach((section, index) => {
-                        const wasVisible = section.hasAttribute('data-was-visible');
-                        
-                        if (!wasVisible) {
-                            section.classList.remove('visible');
-                            section.style.maxHeight = '';
-                            section.style.opacity = '';
-                            
-                            const showButton = document.getElementById(`show-btn-${index}`);
-                            if (showButton) {
-                                showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer';
-                                showButton.classList.remove('active');
-                            }
-                        }
-                    });
-    
-                    // Restaurer les boutons
-                    allButtons.forEach(button => {
-                        button.style.display = '';
-                    });
-    
-                    // Restaurer le bouton flottant
-                    if (floatingBtn) floatingBtn.style.display = '';
-    
-                    // Supprimer le toast de chargement
-                    document.body.removeChild(loadingToast);
-    
-                    // Afficher un toast d'erreur
-                    showToast('Erreur', 'Une erreur est survenue lors de la génération du PDF: ' + error.message, 'error');
-                });
-            } catch (e) {
-                console.error('Erreur dans la fonction saveToPDF:', e);
-                document.body.removeChild(loadingToast);
-                showToast('Erreur', 'Une erreur inattendue est survenue: ' + e.message, 'error');
-            }
+            // --- End html2pdf ---
         }
-        
-        // Save progress before leaving the page
+
+
+        // Save progress automatically when the user navigates away or closes the tab/window.
         window.addEventListener('beforeunload', saveProgress);
+
     </script>
 </body>
 </html
