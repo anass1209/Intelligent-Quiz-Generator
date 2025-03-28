@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizGen - Your Custom Quiz</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- MathJax for LaTeX support -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- html2pdf library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* Global variables */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4cc9f0;
+            --primary-dark: #3a0ca3;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-text: #2d3748;
+            --gray-text: #718096;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        /* Quiz header */
+        .quiz-header {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .quiz-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+        
+        .quiz-logo {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .quiz-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+        
+        .quiz-subtitle {
+            color: var(--gray-text);
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .quiz-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 8px 15px;
+            border-radius: 30px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .progress-container {
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        /* Control bar */
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            background-color: var(--white);
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 15px;
+            z-index: 10;
+        }
+        
+        /* Button styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #edf2f7;
+            color: var(--dark-text);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Improved styles for question cards */
+        .question-card {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .question-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: rgba(67, 97, 238, 0.05);
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .question-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .question-number {
+            background-color: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .question-body {
+            padding: 20px;
+        }
+        
+        .question-text {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            color: var(--dark-text);
+        }
+        
+        /* Improved styles for question actions */
+        .question-actions {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        
+        .btn-show-answer {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-show-answer:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-show-answer.active {
+            background-color: #cbd5e0;
+            color: #4a5568;
+        }
+        
+        /* Simplified answer section */
+        .answer-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            margin-top: 20px;
+            opacity: 0;
+        }
+        
+        .answer-section.visible {
+            max-height: 2000px;
+            opacity: 1;
+        }
+        
+        .answer-container {
+            background-color: #f7fafc;
+            border-radius: 8px;
+            border-left: 3px solid var(--success);
+            margin-top: 10px;
+        }
+        
+        .answer-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--success);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .answer-content {
+            padding: 15px;
+            color: var(--dark-text);
+            line-height: 1.7;
+        }
+        
+        .answer-content p {
+            margin-bottom: 15px;
+        }
+        
+        .answer-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Code and formulas */
+        .answer-content code,
+        .question-text code {
+            background-color: #f7fafc;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: #e53e3e;
+        }
+        
+        /* Difficulty badges */
+        .difficulty-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .difficulty-easy {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+        }
+        
+        .difficulty-medium {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: #f39c12;
+        }
+        
+        .difficulty-hard {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+        
+        /* Floating buttons */
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 100;
+        }
+        
+        .floating-btn.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .floating-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        }
+        
+        /* Print mode */
+        @media print {
+            body {
+                background-color: white;
+                padding-bottom: 0;
+            }
+            
+            .container {
+                margin: 0;
+                max-width: 100%;
+            }
+            
+            .quiz-controls, .floating-btn, .btn {
+                display: none !important;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
+                margin-bottom: 20px;
+                transform: none !important;
+            }
+            
+            .answer-section {
+                max-height: none !important;
+                display: block !important;
+                opacity: 1 !important;
+            }
+            
+            .question-actions {
+                display: none !important;
+            }
+        }
+        
+        /* Toast styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 350px;
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .toast-success { border-left: 4px solid var(--success); }
+        .toast-success .toast-icon { color: var(--success); }
+
+        .toast-error { border-left: 4px solid var(--danger); }
+        .toast-error .toast-icon { color: var(--danger); }
+
+        .toast-content { flex: 1; }
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-text);
+        }
+        .toast-message {
+            font-size: 0.9em;
+            color: var(--gray-text);
+        }
+        
+        /* Style de notification pendant la génération du PDF */
+        body .toast-pdf-generation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 400px;
+            width: 90%;
+            z-index: 2000;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            padding: 25px;
+        }
+
+        /* Animation pour le toast de génération */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .toast-pdf-generation .toast-icon {
+            font-size: 2em;
+            margin-bottom: 15px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+                padding: 0 15px;
+            }
+            
+            .quiz-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .quiz-controls > div {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .question-number {
+                align-self: flex-end;
+            }
+            
+            .floating-btn {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-header">
+            <div class="quiz-logo">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h1 class="quiz-title">Your Custom Quiz</h1>
+            <p class="quiz-subtitle">Questions generated from your documents</p>
+            
+            <div class="quiz-stats">
+                <div class="quiz-stat">
+                    <i class="fas fa-list-ol"></i>
+                    <span>{{ questions|length }} questions</span>
+                </div>
+                <div class="quiz-stat">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="progress-count">0 / {{ questions|length }} completed</span>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+        
+        <div class="quiz-controls">
+            <div>
+                <button class="btn btn-secondary" onclick="window.location.href='{{ url_for('index') }}'">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </button>
+            </div>
+            <div>
+                <button class="btn btn-primary" id="show-all-btn" onclick="toggleAllAnswers()">
+                    <i class="fas fa-eye"></i> Show All Answers
+                </button>
+                <button class="btn btn-success" onclick="saveToPDF()">
+                    <i class="fas fa-file-pdf"></i> Save as PDF
+                </button>
+            </div>
+        </div>
+        
+        <div id="quiz-content">
+            {% if questions and questions|length > 0 %}
+                {% for question_data in questions %}
+                <div class="question-card" id="question-{{ loop.index0 }}">
+                    <div class="question-header">
+                        <div class="question-title">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Question</span>
+                            {% if question_data.difficulty is defined %}
+                            <span class="difficulty-badge difficulty-{{ question_data.difficulty|lower }}">
+                                {{ question_data.difficulty }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="question-number">{{ loop.index }} / {{ questions|length }}</div>
+                    </div>
+                    <div class="question-body">
+                        <div class="question-text">{{ question_data.question }}</div>
+                        <div class="question-actions">
+                            <button class="btn-show-answer" id="show-btn-{{ loop.index0 }}" onclick="toggleAnswer({{ loop.index0 }})">
+                                <i class="fas fa-eye"></i> Show Answer
+                            </button>
+                        </div>
+                        <div class="answer-section" id="answer-{{ loop.index0 }}">
+                            <div class="answer-container">
+                                <div class="answer-header">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Answer</span>
+                                </div>
+                                <div class="answer-content">
+                                    {% if question_data.answer is defined %}
+                                        {{ question_data.answer|safe }}
+                                    {% else %}
+                                        <p>No answer available for this question.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 50px 0;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--gray-text); margin-bottom: 20px;"></i>
+                    <h3 style="margin-bottom: 15px;">No questions available</h3>
+                    <p style="color: var(--gray-text); margin-bottom: 30px;">No questions could be generated or the quiz is empty.</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="floating-btn" id="back-to-top" onclick="scrollToTop()">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+        
+        <!-- Toast pour les notifications -->
+        <div id="toast" class="toast">
+            <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="toast-content">
+                <div class="toast-title">Succès</div>
+                <div class="toast-message">Opération réussie !</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        const questionCount = document.querySelectorAll('.question-card').length;
+        let shownAnswers = 0;
+        
+        // Page initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Activate back to top button on scroll
+            window.addEventListener('scroll', toggleBackToTopButton);
+            
+            // Initialize progress bar
+            updateProgress();
+            
+            // Format code elements with syntax
+            formatCodeElements();
+            
+            // Load previous progress if it exists
+            loadProgress();
+        });
+        
+        // Function to format code elements
+        function formatCodeElements() {
+            const codeRegex = /`([^`]+)`/g;
+            const textElements = document.querySelectorAll('.question-text, .answer-content');
+            
+            textElements.forEach(el => {
+                if (!el.querySelector('code') && !el.querySelector('pre')) {
+                    el.innerHTML = el.innerHTML.replace(codeRegex, '<code>$1</code>');
+                }
+            });
+            
+            // Initialize MathJax if present
+            if (window.MathJax) {
+                window.MathJax.typeset();
+            }
+        }
+        
+        // Function to toggle display of an answer
+        function toggleAnswer(index) {
+            const answerSection = document.getElementById(`answer-${index}`);
+            const showButton = document.getElementById(`show-btn-${index}`);
+            
+            if (!answerSection || !showButton) return;
+            
+            const isVisible = answerSection.classList.contains('visible');
+            
+            if (isVisible) {
+                // Hide the answer
+                answerSection.classList.remove('visible');
+                showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer';
+                showButton.classList.remove('active');
+                shownAnswers--;
+            } else {
+                // Show the answer
+                answerSection.classList.add('visible');
+                showButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer';
+                showButton.classList.add('active');
+                shownAnswers++;
+                
+                // Process LaTeX if necessary
+                if (window.MathJax) {
+                    window.MathJax.typeset([answerSection]);
+                }
+            }
+            
+            // Update progress
+            updateProgress();
+            
+            // Save progress
+            saveProgress();
+        }
+        
+        // Function to toggle display of all answers
+        function toggleAllAnswers() {
+            const allAnswerSections = document.querySelectorAll('.answer-section');
+            const allVisible = shownAnswers === questionCount;
+            const showAllBtn = document.getElementById('show-all-btn');
+            
+            // Update buttons
+            if (allVisible) {
+                // Hide all answers
+                allAnswerSections.forEach((section, index) => {
+                    const showButton = document.getElementById(`show-btn-${index}`);
+                    section.classList.remove('visible');
+                    if (showButton) {
+                        showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer';
+                        showButton.classList.remove('active');
+                    }
+                });
+                
+                // Update "Show All" button
+                showAllBtn.innerHTML = '<i class="fas fa-eye"></i> Show All Answers';
+                showAllBtn.classList.remove('btn-secondary');
+                showAllBtn.classList.add('btn-primary');
+                
+                shownAnswers = 0;
+            } else {
+                // Show all answers
+                allAnswerSections.forEach((section, index) => {
+                    const showButton = document.getElementById(`show-btn-${index}`);
+                    section.classList.add('visible');
+                    if (showButton) {
+                        showButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer';
+                        showButton.classList.add('active');
+                    }
+                });
+                
+                // Update "Show All" button
+                showAllBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide All Answers';
+                showAllBtn.classList.remove('btn-primary');
+                showAllBtn.classList.add('btn-secondary');
+                
+                shownAnswers = questionCount;
+                
+                // Process LaTeX if necessary
+                if (window.MathJax) {
+                    window.MathJax.typeset();
+                }
+            }
+            
+            // Update progress
+            updateProgress();
+            
+            // Save progress
+            saveProgress();
+        }
+        
+        // Function to update the progress bar
+        function updateProgress() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressCount = document.getElementById('progress-count');
+            
+            if (!progressBar || !progressCount) return;
+            
+            const percentage = questionCount > 0 ? (shownAnswers / questionCount) * 100 : 0;
+            progressBar.style.width = `${percentage}%`;
+            progressCount.textContent = `${shownAnswers} / ${questionCount} completed`;
+        }
+        
+        // Function to handle the back to top button
+        function toggleBackToTopButton() {
+            const backToTopButton = document.getElementById('back-to-top');
+            if (!backToTopButton) return;
+            
+            if (window.scrollY > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+        }
+        
+        // Function to scroll to top of the page
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Function to save progress
+        function saveProgress() {
+            const shownAnswerIndices = [];
+            document.querySelectorAll('.answer-section').forEach((section, index) => {
+                if (section.classList.contains('visible')) {
+                    shownAnswerIndices.push(index);
+                }
+            });
+            
+            if (shownAnswerIndices.length > 0) {
+                localStorage.setItem('quizProgress', JSON.stringify(shownAnswerIndices));
+            } else {
+                localStorage.removeItem('quizProgress');
+            }
+        }
+        
+        // Function to load saved progress
+        function loadProgress() {
+            try {
+                const savedProgress = localStorage.getItem('quizProgress');
+                if (!savedProgress) return;
+                
+                const indices = JSON.parse(savedProgress);
+                if (!Array.isArray(indices)) return;
+                
+                indices.forEach(index => {
+                    const answerSection = document.getElementById(`answer-${index}`);
+                    const showButton = document.getElementById(`show-btn-${index}`);
+                    
+                    if (answerSection && showButton) {
+                        answerSection.classList.add('visible');
+                        showButton.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer';
+                        showButton.classList.add('active');
+                        shownAnswers++;
+                    }
+                });
+                
+                // Update progress after loading all answers
+                updateProgress();
+                
+                // Process LaTeX if necessary
+                if (window.MathJax && shownAnswers > 0) {
+                    window.MathJax.typeset();
+                }
+            } catch (e) {
+                console.error('Error loading progress:', e);
+            }
+        }
+        
+        // Fonction pour afficher les toasts de notification
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastTitle = toast.querySelector('.toast-title');
+            const toastMessage = toast.querySelector('.toast-message');
+            const toastIcon = toast.querySelector('.toast-icon i');
+            
+            // Définir le contenu
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            
+            // Définir le type (success, error, warning, info)
+            toast.className = 'toast';
+            if (type === 'error') {
+                toast.classList.add('toast-error');
+                toastIcon.className = 'fas fa-exclamation-circle';
+            } else if (type === 'warning') {
+                toast.classList.add('toast-warning');
+                toastIcon.className = 'fas fa-exclamation-triangle';
+            } else if (type === 'info') {
+                toast.classList.add('toast-info');
+                toastIcon.className = 'fas fa-info-circle';
+            } else {
+                toast.classList.add('toast-success');
+                toastIcon.className = 'fas fa-check-circle';
+            }
+            
+            // Afficher le toast
+            toast.classList.add('show');
+            
+            // Masquer après 5 secondes
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Fonction pour mémoriser l'état des réponses avant la génération du PDF
+        function rememberVisibleStates() {
+            const allAnswerSections = document.querySelectorAll('.answer-section');
+            allAnswerSections.forEach(section => {
+                if (section.classList.contains('visible')) {
+                    section.setAttribute('data-was-visible', 'true');
+                } else {
+                    section.removeAttribute('data-was-visible');
+                }
+            });
+        }
+        
+        // Fonction pour sauvegarder en PDF
+        function saveToPDF() {
+            // S'assurer que html2pdf est disponible
+            if (typeof html2pdf === 'undefined') {
+                showToast('Erreur', 'La bibliothèque html2pdf n\'est pas disponible.', 'error');
+                console.error('html2pdf n\'est pas chargé.');
+                return;
+            }
+            
+            // Afficher un message de chargement
+            const loadingToast = document.createElement('div');
+            loadingToast.className = 'toast toast-info show toast-pdf-generation';
+            loadingToast.innerHTML = `
+                <div class="toast-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                <div class="toast-content">
+                    <div class="toast-title">Génération du PDF</div>
+                    <div class="toast-message">Veuillez patienter pendant la création du fichier...</div>
+                </div>
+            `;
+            document.body.appendChild(loadingToast);
+    
+            try {
+                // Mémoriser l'état actuel des réponses (visibles ou non)
+                rememberVisibleStates();
+    
+                // Obtenez le contenu du quiz
+                const quizContent = document.getElementById('quiz-content');
+                
+                // Options pour html2pdf
+                const options = {
+                    margin: 10,
+                    filename: 'quiz-personnalise.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+    
+                // Montrer toutes les réponses pour le PDF
+                const allAnswerSections = document.querySelectorAll('.answer-section');
+                allAnswerSections.forEach(section => {
+                    section.classList.add('visible');
+                    section.style.maxHeight = 'none'; // Forcer l'affichage pour le PDF
+                    section.style.opacity = '1';
+                });
+    
+                // Cacher les boutons pour le PDF
+                const allButtons = document.querySelectorAll('.question-actions button, .quiz-controls');
+                allButtons.forEach(button => {
+                    button.style.display = 'none';
+                });
+    
+                // Masquer le bouton flottant
+                const floatingBtn = document.getElementById('back-to-top');
+                if (floatingBtn) floatingBtn.style.display = 'none';
+    
+                // Générer le PDF
+                html2pdf().from(quizContent).set(options).save().then(() => {
+                    // Restaurer l'état d'origine après la génération
+                    allAnswerSections.forEach((section, index) => {
+                        const showButton = document.getElementById(`show-btn-${index}`);
+                        const wasVisible = section.hasAttribute('data-was-visible');
+                        
+                        if (!wasVisible) {
+                            section.classList.remove('visible');
+                            section.style.maxHeight = '';
+                            section.style.opacity = '';
+                            
+                            if (showButton) {
+                                showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer';
+                                showButton.classList.remove('active');
+                            }
+                        }
+                    });
+    
+                    // Restaurer les boutons
+                    allButtons.forEach(button => {
+                        button.style.display = '';
+                    });
+    
+                    // Restaurer le bouton flottant
+                    if (floatingBtn) floatingBtn.style.display = '';
+    
+                    // Supprimer le toast de chargement
+                    document.body.removeChild(loadingToast);
+    
+                    // Afficher un toast de succès
+                    showToast('Succès', 'Le PDF a été généré avec succès !', 'success');
+                }).catch(error => {
+                    console.error('Erreur lors de la génération du PDF:', error);
+                    
+                    // Restaurer l'état d'origine en cas d'erreur
+                    allAnswerSections.forEach((section, index) => {
+                        const wasVisible = section.hasAttribute('data-was-visible');
+                        
+                        if (!wasVisible) {
+                            section.classList.remove('visible');
+                            section.style.maxHeight = '';
+                            section.style.opacity = '';
+                            
+                            const showButton = document.getElementById(`show-btn-${index}`);
+                            if (showButton) {
+                                showButton.innerHTML = '<i class="fas fa-eye"></i> Show Answer';
+                                showButton.classList.remove('active');
+                            }
+                        }
+                    });
+    
+                    // Restaurer les boutons
+                    allButtons.forEach(button => {
+                        button.style.display = '';
+                    });
+    
+                    // Restaurer le bouton flottant
+                    if (floatingBtn) floatingBtn.style.display = '';
+    
+                    // Supprimer le toast de chargement
+                    document.body.removeChild(loadingToast);
+    
+                    // Afficher un toast d'erreur
+                    showToast('Erreur', 'Une erreur est survenue lors de la génération du PDF: ' + error.message, 'error');
+                });
+            } catch (e) {
+                console.error('Erreur dans la fonction saveToPDF:', e);
+                document.body.removeChild(loadingToast);
+                showToast('Erreur', 'Une erreur inattendue est survenue: ' + e.message, 'error');
+            }
+        }
+        
+        // Save progress before leaving the page
+        window.addEventListener('beforeunload', saveProgress);
+    </script>
+</body>
+</html
