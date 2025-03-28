@@ -27,10 +27,9 @@ Built with cutting-edge AI technology (Google Gemini + LangChain + RAG), QuizGen
 ## 🖼️ Screenshots
 
 <div align="center">
-  <img src="src/Picture/Home.png" alt="Main Interface" width="45%">
-  <img src="src/Picture/Result1.png" alt="Generated Quiz" width="45%">
-  <img src="src/Picture/Result2.png" alt="Generated Quiz" width="45%">
-
+  <img src="src/Picture/Home.png" alt="Main Interface" width="45%" style="display: block; margin: 0 auto;">
+  <img src="src/Picture/Result1.png" alt="Generated Quiz" width="45%" style="display: block; margin: 0 auto;">
+  <img src="src/Picture/Result2.png" alt="Generated Quiz" width="45%" style="display: block; margin: 0 auto;">
 </div>
 
 ## 🧰 Technology Stack
